@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Harvest Time Tracker</title>
+    <link rel="stylesheet" href="popup.css" />
+    <script src="translations.js"></script>
+    <script src="i18n.js"></script>
+  </head>
+  <body>
+    <div class="popup-container">
+      <header class="header header--tight">
+        <div class="header-left">
+          <img src="icons/icon32.png" alt="Harvest" class="logo" />
+          <h2>Harvest</h2>
+        </div>
+      </header>
+      <div class="user-info" id="userInfo" style="display: none">
+        <div class="user-details">
+          <span class="user-name" id="userName"></span>
+          <span data-i18n="user_tracked_label">&nbsp;tracked</span>
+          <span class="daily-total" id="dailyTotal">0h 00m</span>
+          <span data-i18n="user_for_label"> for «</span
+          ><span class="account-name" id="accountName"></span
+          ><span data-i18n="user_today_label">» today.</span>
+        </div>
+      </div>
+
+      <div class="auth-section" id="authSection">
+        <div class="login-form">
+          <div class="auth-message">
+            <p data-i18n="auth_title">
+              Connect your Harvest account to start tracking time.
+            </p>
+          </div>
+          <input
+            type="text"
+            id="subdomain"
+            data-i18n-placeholder="auth_subdomain_placeholder"
+            placeholder="Company subdomain (e.g. yourcompany)"
+          />
+          <input
+            type="password"
+            id="accessToken"
+            data-i18n-placeholder="auth_token_placeholder"
+            placeholder="Personal Access Token"
+          />
+          <button id="loginBtn" data-i18n="auth_login_button">
+            Connect to Harvest
+          </button>
+          <div
+            class="error-message"
+            id="errorMessage"
+            style="display: none"
+          ></div>
+          <div class="auth-help">
+            <details>
+              <summary data-i18n="auth_help_title">
+                How to get your token
+              </summary>
+              <ol>
+                <li data-i18n="auth_help_step1">
+                  Go to your Harvest account settings
+                </li>
+                <li data-i18n="auth_help_step2">
+                  Navigate to "Developers" section
+                </li>
+                <li data-i18n="auth_help_step3">
+                  Create a "Personal Access Token"
+                </li>
+                <li data-i18n="auth_help_step4">
+                  Copy the token and paste it above
+                </li>
+              </ol>
+            </details>
+          </div>
+        </div>
+      </div>
+      <div class="main-section" id="mainSection" style="display: none">
+        <section class="current-task-section">
+          <div
+            id="currentTaskStatus"
+            class="current-task-card"
+            style="display: none"
+          >
+            <h3>
+              <span data-i18n="current_task_label">Current Task:</span
+              >&nbsp;<span
+                class="current-task-project"
+                id="statusProject"
+              ></span>
+              -> <span class="current-task-task" id="statusTask"></span>
+            </h3>
+            <div>
+              <span class="current-task-time" id="statusTimerCompact"
+                >00:00</span
+              >
+            </div>
+            <div class="current-task-title" id="statusTaskText"></div>
+            <div class="current-task-actions">
+              <a
+                id="statusEditLink"
+                class="status-edit-link"
+                href="#"
+                target="_blank"
+                data-i18n-title="current_task_edit"
+                data-i18n="current_task_edit"
+                title="Edit in Harvest"
+                style="display: none"
+              >
+                ✏️ Edit in Harvest
+              </a>
+              <button
+                id="statusToggleBtn"
+                class="status-toggle-btn"
+                data-i18n-title="timer_start"
+                title="Start timer"
+              >
+                ▶
+              </button>
+            </div>
+          </div>
+        </section>
+
+        <!-- Settings panel moved to bottom (toggled by footer cog) -->
+
+        <section class="new-task-section">
+          <div class="new-task-form" id="timerDetails">
+            <h3 data-i18n="new_task_title">New Task</h3>
+
+            <select id="projectSelect">
+              <option value="" data-i18n="new_task_project_placeholder">
+                Select Project
+              </option>
+            </select>
+            <select id="taskSelect">
+              <option value="" data-i18n="new_task_task_placeholder">
+                Select Task
+              </option>
+            </select>
+            <textarea
+              id="description"
+              data-i18n-placeholder="new_task_description_placeholder"
+              placeholder="What are you working on?"
+              rows="3"
+              style="resize: vertical"
+            ></textarea>
+            <div class="open-harvest-link-wrapper">
+              <button
+                id="startNewTaskBtn"
+                class="new-task-start-btn btn--start"
+                data-i18n="new_task_start_button"
+              >
+                Start Task
+              </button>
+              <a
+                href="#"
+                class="open-harvest-link"
+                id="openHarvestLink"
+                data-i18n="new_task_open_harvest"
+                >Open Harvest ▸</a
+              >
+            </div>
+          </div>
+        </section>
+
+        <section class="new-task-section">
+          <div class="recent-entries">
+            <h3 data-i18n="recent_entries_title">Recent Entries</h3>
+
+            <div id="recentEntriesList">
+              <!-- Recent entries will be populated here -->
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <div class="footer">
+        <div class="language-selector">
+          <select
+            id="languageSelect"
+            class="language-dropdown"
+            title="Language / Idioma / Langue / Sprache"
+          >
+            <option value="auto">🌍 Auto</option>
+            <option value="en">🇬🇧 English</option>
+            <option value="de">🇩🇪 Deutsch</option>
+            <option value="es">🇪🇸 Español</option>
+            <option value="fr">🇫🇷 Français</option>
+            <option value="it">🇮🇹 Italiano</option>
+            <option value="pt">🇵🇹 Português</option>
+            <option value="nl">🇳🇱 Nederlands</option>
+          </select>
+        </div>
+        <div style="flex: 1"></div>
+        <button
+          id="logoutBtn"
+          class="btn-logout"
+          style="display: none"
+          data-i18n="user_logout"
+        >
+          Logout
+        </button>
+      </div>
+    </div>
+
+    <script src="popup.js"></script>
+  </body>
+</html>
