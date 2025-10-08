@@ -22,8 +22,6 @@ Built with **intuitive iteration** and **AI pair programming**:
 - UX-first approach, structure added retroactively
 - Comprehensive tests ensure quality
 
-> _"The best code solves real problems in a way that feels right."_
-
 ## Installation
 
 1. Clone or download this repository
