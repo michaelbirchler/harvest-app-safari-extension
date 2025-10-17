@@ -567,6 +567,20 @@ class TimerManager {
       } catch (e) {
         console.warn("Failed to store activeTimerMeta", e);
       }
+      // Notify background script to update icon to active state
+      try {
+        chrome.runtime.sendMessage({
+          action: "startTimer",
+          data: {
+            id: entry.id,
+            projectId: projectId,
+            taskId: taskId,
+            startTime: this.timerStartedAt.toISOString(),
+          },
+        });
+      } catch (e) {
+        console.warn("Failed to notify background script of timer start", e);
+      }
       return entry;
     } catch (error) {
       console.error("Failed to start timer:", error);
@@ -586,6 +600,12 @@ class TimerManager {
         chrome.storage.local.remove(["activeTimerMeta"]);
       } catch (e) {
         console.warn("Failed clearing activeTimerMeta", e);
+      }
+      // Notify background script to update icon to inactive state
+      try {
+        chrome.runtime.sendMessage({ action: "stopTimer" });
+      } catch (e) {
+        console.warn("Failed to notify background script of timer stop", e);
       }
       return true;
     } catch (error) {

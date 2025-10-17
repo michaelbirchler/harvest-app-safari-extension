@@ -2,8 +2,6 @@
 class BackgroundTimerManager {
   constructor() {
     this.currentTimer = null;
-    this.intervalId = null;
-    this.badgeEnabled = true; // can be toggled via storage flag 'disableBadge'
     this.isSafari =
       /Safari\//.test(navigator.userAgent) &&
       !/Chrome\//.test(navigator.userAgent);
@@ -12,13 +10,9 @@ class BackgroundTimerManager {
   }
 
   init() {
-    // Load badge preference
-    chrome.storage.sync.get(["disableBadge"], (res) => {
-      if (res && res.disableBadge === true) {
-        this.badgeEnabled = false;
-      }
-      this.updateBadge();
-    });
+    // Initialize icon to default state
+    this.updateIcon();
+
     // Listen for timer updates from popup and content scripts
     chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       switch (message.action) {
@@ -58,8 +52,8 @@ class BackgroundTimerManager {
       }
     });
 
-    // Initialize badge
-    this.updateBadge();
+    // Initialize icon
+    this.updateIcon();
 
     // Restore timer state on startup
     this.restoreTimerState();
@@ -68,32 +62,18 @@ class BackgroundTimerManager {
   startTimer(timerData) {
     this.currentTimer = timerData;
     this.saveTimerState();
-    this.updateBadge();
+    this.updateIcon();
     chrome.runtime.sendMessage({
       action: "activeTimerUpdated",
       data: timerData,
     });
-
-    // Start periodic badge updates
-    if (this.intervalId) {
-      clearInterval(this.intervalId);
-    }
-
-    this.intervalId = setInterval(() => {
-      this.updateBadge();
-    }, 1000); // per-second for real-time display
   }
 
   stopTimer() {
     this.currentTimer = null;
     this.saveTimerState();
-    this.updateBadge();
+    this.updateIcon();
     chrome.runtime.sendMessage({ action: "activeTimerStopped" });
-
-    if (this.intervalId) {
-      clearInterval(this.intervalId);
-      this.intervalId = null;
-    }
   }
 
   getTimerState() {
@@ -103,29 +83,37 @@ class BackgroundTimerManager {
     };
   }
 
-  updateBadge() {
-    if (!this.badgeEnabled) {
-      chrome.browserAction.setBadgeText({ text: "" });
-      return;
-    }
+  updateIcon() {
     if (this.currentTimer) {
-      const now = Date.now();
-      const startTime = new Date(this.currentTimer.startTime).getTime();
-      const elapsed = Math.floor((now - startTime) / 1000);
-      const hours = Math.floor(elapsed / 3600);
-      const minutes = Math.floor((elapsed % 3600) / 60);
-      const seconds = elapsed % 60;
-      let badgeText;
-      if (hours > 0) {
-        badgeText = `${hours}:${minutes.toString().padStart(2, "0")}`;
-      } else {
-        badgeText = `${minutes}:${seconds.toString().padStart(2, "0")}`;
-      }
-      chrome.browserAction.setBadgeText({ text: badgeText });
-      chrome.browserAction.setBadgeBackgroundColor({ color: "#238636" });
+      // Timer is running - use dark icon variant
+      chrome.browserAction.setIcon({
+        path: {
+          16: "icons/icon16-dark.png",
+          32: "icons/icon32-dark.png",
+          48: "icons/icon48-dark.png",
+          128: "icons/icon128-dark.png",
+          256: "icons/icon256-dark.png",
+          512: "icons/icon512-dark.png",
+        },
+      });
+      chrome.browserAction.setTitle({
+        title: "Harvest Time Tracker (Timer Running)",
+      });
     } else {
-      chrome.browserAction.setBadgeText({ text: "" });
-      chrome.browserAction.setBadgeBackgroundColor({ color: "#6e7781" });
+      // Timer is stopped - use default light icon
+      chrome.browserAction.setIcon({
+        path: {
+          16: "icons/icon16.png",
+          32: "icons/icon32.png",
+          48: "icons/icon48.png",
+          128: "icons/icon128.png",
+          256: "icons/icon256.png",
+          512: "icons/icon512.png",
+        },
+      });
+      chrome.browserAction.setTitle({
+        title: "Harvest Time Tracker",
+      });
     }
   }
 
@@ -311,8 +299,8 @@ chrome.runtime.onMessage.addListener((message, sender, _sendResponse) => {
       backgroundManager.stopTimer();
       break;
 
-    case "updateBadge":
-      backgroundManager.updateBadge();
+    case "updateIcon":
+      backgroundManager.updateIcon();
       break;
   }
 });
