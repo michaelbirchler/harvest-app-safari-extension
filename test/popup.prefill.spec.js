@@ -14,6 +14,7 @@ function loadHTML() {
 }
 
 beforeEach(() => {
+  vi.resetModules();
   loadHTML();
   // chrome mocks
   global.chrome = {
@@ -89,5 +90,65 @@ describe("forceActiveTabPrefill", () => {
     await import("../popup.js");
     await new Promise((r) => setTimeout(r, 50));
     expect(textarea.value).toBe("Manual note");
+  });
+
+  it("prefills new task fields from the running timer", async () => {
+    global.fetch = vi.fn((url) => {
+      if (url.includes("/users/me")) {
+        return ok({
+          id: 9,
+          first_name: "User",
+          last_name: "Name",
+          email: "u@example.com",
+        });
+      }
+      if (url.includes("/projects?")) {
+        return ok({
+          projects: [
+            {
+              id: 7,
+              name: "Sirius 2026",
+              task_assignments: [{ task: { id: 11, name: "02_Entwicklung" } }],
+            },
+          ],
+        });
+      }
+      if (url.includes("/tasks?")) {
+        return ok({ tasks: [{ id: 11, name: "02_Entwicklung" }] });
+      }
+      if (url.includes("/time_entries?from=")) {
+        return ok({
+          time_entries: [
+            {
+              id: 55,
+              hours: 0.5,
+              is_running: true,
+              user: { id: 9, name: "User Name" },
+              project: { id: 7, name: "Sirius 2026" },
+              task: { id: 11, name: "02_Entwicklung" },
+              notes:
+                "Daily Scrum\nhttps://github.com/swissredcross/example/issues/162",
+              updated_at: "2026-03-10T08:00:00.000Z",
+              created_at: "2026-03-10T07:30:00.000Z",
+              timer_started_at: "2026-03-10T07:30:00.000Z",
+            },
+          ],
+        });
+      }
+      return ok({});
+    });
+
+    await import("../popup.js");
+    await new Promise((r) => setTimeout(r, 50));
+
+    const project = document.getElementById("projectSelect");
+    const task = document.getElementById("taskSelect");
+    const desc = document.getElementById("description");
+
+    expect(project.value).toBe("7");
+    expect(task.value).toBe("11");
+    expect(desc.value).toBe(
+      "Daily Scrum\nhttps://github.com/swissredcross/example/issues/162",
+    );
   });
 });

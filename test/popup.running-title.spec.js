@@ -69,7 +69,7 @@ function installFetchMocks() {
             updated_at: new Date(fixedNow()).toISOString(),
             created_at: new Date(fixedNow() - 15 * 60 * 1000).toISOString(),
             timer_started_at: new Date(
-              fixedNow() - 15 * 60 * 1000
+              fixedNow() - 15 * 60 * 1000,
             ).toISOString(),
           },
         ],
@@ -94,6 +94,7 @@ function installFetchMocks() {
 }
 
 beforeEach(() => {
+  vi.resetModules();
   loadHTML();
   if (!global.chrome) global.chrome = {};
   global.chrome.browserAction = {
@@ -107,8 +108,7 @@ beforeEach(() => {
 });
 
 describe("running timer title refresh", () => {
-  it("updates first line with new active tab title when not user edited", async () => {
-    // Provide initial tab (old title) and allow popup init to prefill it
+  it("keeps running timer notes in the form instead of replacing them with active tab data", async () => {
     let activeTitle = "Old Page Title";
     let activeUrl = "https://old.example";
     global.chrome.tabs = {
@@ -117,9 +117,8 @@ describe("running timer title refresh", () => {
     const popupModule = await import("../popup.js");
     await new Promise((r) => setTimeout(r, 0));
     const desc = document.getElementById("description");
-    // Sanity: first line should be old title
-    expect(desc.value.split("\n")[0]).toBe("Old Page Title");
-    // Now change tab context
+    expect(desc.value).toBe("Initial Title\nhttps://old.example");
+
     activeTitle = "New Page Title";
     activeUrl = "https://new.example";
     global.chrome.tabs.query = (_q, cb) =>
@@ -128,9 +127,8 @@ describe("running timer title refresh", () => {
       global.window.forceActiveTabPrefill || popupModule.forceActiveTabPrefill
     )?.();
     await new Promise((r) => setTimeout(r, 0));
-    const lines = desc.value.split("\n");
-    expect(lines[0]).toBe("New Page Title");
-    expect(lines[1]).toBe("https://new.example");
+
+    expect(desc.value).toBe("Initial Title\nhttps://old.example");
   });
 
   it("does not overwrite when user edited", async () => {

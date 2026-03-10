@@ -74,7 +74,7 @@ class HarvestAPI {
           attempt++;
           console.warn(
             `User validation attempt ${attempt} failed`,
-            e?.message || e
+            e?.message || e,
           );
           if (attempt < maxAttempts) {
             await new Promise((r) => setTimeout(r, 400));
@@ -83,7 +83,7 @@ class HarvestAPI {
       }
       // Do NOT clear credentials immediately; just mark as not currently validated
       console.warn(
-        "Proceeding without fresh validation (offline or transient error). Credentials retained."
+        "Proceeding without fresh validation (offline or transient error). Credentials retained.",
       );
       return true; // allow UI to proceed; API calls may still surface errors which user can act on
     } catch (e) {
@@ -115,12 +115,12 @@ class HarvestAPI {
             Authorization: `Bearer ${accessToken}`,
             "User-Agent": "Harvest Time Tracker Safari Extension",
           },
-        }
+        },
       );
       if (!accountsResp.ok) {
         const txt = await accountsResp.text();
         throw new Error(
-          `Accounts lookup failed (${accountsResp.status}): ${txt}`
+          `Accounts lookup failed (${accountsResp.status}): ${txt}`,
         );
       }
       const accountsJson = await accountsResp.json();
@@ -131,7 +131,7 @@ class HarvestAPI {
       // Find account by matching base_uri containing subdomain OR (fallback) first account
       let harvestAccount =
         accounts.find((a) =>
-          (a.base_uri || "").includes(`${subdomain}.harvestapp.com`)
+          (a.base_uri || "").includes(`${subdomain}.harvestapp.com`),
         ) || accounts[0];
 
       this.accountId = harvestAccount.id;
@@ -147,12 +147,12 @@ class HarvestAPI {
             "User-Agent": "Harvest Time Tracker Safari Extension",
             "Content-Type": "application/json",
           },
-        }
+        },
       );
       if (!verifyResponse.ok) {
         const errorText = await verifyResponse.text();
         throw new Error(
-          `User verification failed (${verifyResponse.status}): ${errorText}`
+          `User verification failed (${verifyResponse.status}): ${errorText}`,
         );
       }
       const userData = await verifyResponse.json();
@@ -200,10 +200,10 @@ class HarvestAPI {
       const errorText = await response.text();
       console.error(
         `Request failed: ${response.status} ${response.statusText}`,
-        errorText
+        errorText,
       );
       throw new Error(
-        `HTTP ${response.status}: ${response.statusText} - ${errorText}`
+        `HTTP ${response.status}: ${response.statusText} - ${errorText}`,
       );
     }
 
@@ -242,14 +242,14 @@ class HarvestAPI {
     // Harvest API: /projects/{PROJECT_ID}/task_assignments
     try {
       const data = await this.makeRequest(
-        `/projects/${projectId}/task_assignments?is_active=true`
+        `/projects/${projectId}/task_assignments?is_active=true`,
       );
       return data.task_assignments || [];
     } catch (e) {
       console.error(
         "Failed to fetch task assignments for project",
         projectId,
-        e
+        e,
       );
       return [];
     }
@@ -296,7 +296,7 @@ class HarvestAPI {
         `/time_entries/${entryId}/restart`,
         {
           method: "PATCH",
-        }
+        },
       );
       return restarted;
     } catch (e) {
@@ -317,7 +317,7 @@ class HarvestAPI {
           "accountName",
           "userId",
         ],
-        resolve
+        resolve,
       );
     });
   }
@@ -366,13 +366,13 @@ class TimerManager {
 
       if (entries.time_entries && entries.time_entries.length > 0) {
         const runningEntries = entries.time_entries.filter(
-          (entry) => entry.is_running
+          (entry) => entry.is_running,
         );
         console.log(
           "Total entries:",
           entries.time_entries.length,
           "Running entries:",
-          runningEntries.length
+          runningEntries.length,
         );
 
         if (runningEntries.length > 0) {
@@ -381,7 +381,7 @@ class TimerManager {
             console.log(
               `  ${index + 1}. User: ${entry.user?.name} (ID: ${
                 entry.user?.id
-              }) - ${entry.project?.name}/${entry.task?.name}`
+              }) - ${entry.project?.name}/${entry.task?.name}`,
             );
           });
         }
@@ -389,10 +389,10 @@ class TimerManager {
         // User ID checking - try to filter by user, but don't fail completely
         if (!this.api.userId) {
           console.warn(
-            "⚠️  No user ID available! Cannot filter timers safely."
+            "⚠️  No user ID available! Cannot filter timers safely.",
           );
           console.log(
-            "🔧 Showing no timers to prevent displaying team timers. Please re-authenticate."
+            "🔧 Showing no timers to prevent displaying team timers. Please re-authenticate.",
           );
           this.currentTimer = null;
           return;
@@ -400,12 +400,12 @@ class TimerManager {
 
         console.log(
           "🔍 Looking for timers belonging to user ID:",
-          this.api.userId
+          this.api.userId,
         );
 
         const runningEntry = entries.time_entries.find(
           (entry) =>
-            entry.is_running && entry.user && entry.user.id === this.api.userId
+            entry.is_running && entry.user && entry.user.id === this.api.userId,
         );
 
         if (runningEntry) {
@@ -424,18 +424,18 @@ class TimerManager {
           const hoursAtFetch = runningEntry.hours || 0; // includes current segment up to fetch
           const runningSecondsSoFar = Math.max(
             0,
-            (Date.now() - this.timerStartedAt.getTime()) / 1000
+            (Date.now() - this.timerStartedAt.getTime()) / 1000,
           );
           this.baseHours = Math.max(
             0,
-            hoursAtFetch - runningSecondsSoFar / 3600
+            hoursAtFetch - runningSecondsSoFar / 3600,
           );
           console.log(
             `[TimerCalc] loadCurrentTimer hoursAtFetch=${hoursAtFetch.toFixed(
-              4
+              4,
             )} runningSecondsSoFar=${runningSecondsSoFar} baseHours=${this.baseHours.toFixed(
-              4
-            )}`
+              4,
+            )}`,
           );
           this.elapsedSeconds = Math.floor(hoursAtFetch * 3600);
           this.startInterval();
@@ -446,14 +446,14 @@ class TimerManager {
               const desiredProjectId = runningEntry.project.id;
               setTimeout(() => {
                 const projOption = projectSelect?.querySelector(
-                  `option[value="${desiredProjectId}"]`
+                  `option[value="${desiredProjectId}"]`,
                 );
                 if (projOption) {
                   projectSelect.value = desiredProjectId;
                   handleProjectChange().then(() => {
                     if (runningEntry.task?.id) {
                       const taskOption = taskSelect?.querySelector(
-                        `option[value="${runningEntry.task.id}"]`
+                        `option[value="${runningEntry.task.id}"]`,
                       );
                       if (taskOption) taskSelect.value = runningEntry.task.id;
                     }
@@ -467,17 +467,17 @@ class TimerManager {
         } else {
           console.log(
             "❌ No running timer found for your user ID:",
-            this.api.userId
+            this.api.userId,
           );
           if (runningEntries.length > 0) {
             console.log(
-              "⚠️  There are running timers, but none belong to you:"
+              "⚠️  There are running timers, but none belong to you:",
             );
             runningEntries.forEach((entry, index) => {
               console.log(
                 `   ${index + 1}. User ID ${entry.user?.id} (${
                   entry.user?.name
-                }) - NOT YOU`
+                }) - NOT YOU`,
               );
             });
           }
@@ -521,7 +521,7 @@ class TimerManager {
         if (entry) {
           console.log(
             "🔁 Resuming existing entry instead of creating new",
-            entry.id
+            entry.id,
           );
           entry = await this.api.restartTimer(entry.id);
         }
@@ -539,16 +539,16 @@ class TimerManager {
       const hoursAtFetch = entry.hours || 0;
       const runningSecondsSoFar = Math.max(
         0,
-        (Date.now() - this.timerStartedAt.getTime()) / 1000
+        (Date.now() - this.timerStartedAt.getTime()) / 1000,
       );
       this.baseHours = Math.max(0, hoursAtFetch - runningSecondsSoFar / 3600);
       this.elapsedSeconds = Math.floor(hoursAtFetch * 3600);
       console.log(
         `[TimerCalc] startTimer hoursAtFetch=${hoursAtFetch.toFixed(
-          4
+          4,
         )} runningSecondsSoFar=${runningSecondsSoFar} baseHours=${this.baseHours.toFixed(
-          4
-        )}`
+          4,
+        )}`,
       );
       this.startInterval();
       // Persist active timer metadata for content scripts (e.g., GitHub button state)
@@ -621,10 +621,10 @@ class TimerManager {
       if (this.timerStartedAt) {
         const runningSecondsLive = Math.max(
           0,
-          (Date.now() - this.timerStartedAt.getTime()) / 1000
+          (Date.now() - this.timerStartedAt.getTime()) / 1000,
         );
         this.elapsedSeconds = Math.floor(
-          this.baseHours * 3600 + runningSecondsLive
+          this.baseHours * 3600 + runningSecondsLive,
         );
         this.updateTimerDisplay();
         updateDailyTotalUI();
@@ -654,7 +654,7 @@ class TimerManager {
       const entries = await this.api.getTimeEntries();
       const runningEntry = entries.time_entries?.find(
         (entry) =>
-          entry.is_running && entry.user && entry.user.id === this.api.userId
+          entry.is_running && entry.user && entry.user.id === this.api.userId,
       );
 
       // Case 1: External timer is running, but we don't have one locally
@@ -673,7 +673,7 @@ class TimerManager {
         const hoursAtFetch = runningEntry.hours || 0;
         const runningSecondsSoFar = Math.max(
           0,
-          (Date.now() - this.timerStartedAt.getTime()) / 1000
+          (Date.now() - this.timerStartedAt.getTime()) / 1000,
         );
         this.baseHours = Math.max(0, hoursAtFetch - runningSecondsSoFar / 3600);
         this.elapsedSeconds = Math.floor(hoursAtFetch * 3600);
@@ -695,7 +695,7 @@ class TimerManager {
       // Case 2: We have a local timer, but no timer is running externally
       if (!runningEntry && this.currentTimer) {
         console.log(
-          "⚠️ Local timer exists but no external timer found - timer may have been stopped externally"
+          "⚠️ Local timer exists but no external timer found - timer may have been stopped externally",
         );
         await this.stopCurrentTimer();
         updateStatusBar();
@@ -719,11 +719,11 @@ class TimerManager {
           const hoursAtFetch = runningEntry.hours || 0;
           const runningSecondsSoFar = Math.max(
             0,
-            (Date.now() - this.timerStartedAt.getTime()) / 1000
+            (Date.now() - this.timerStartedAt.getTime()) / 1000,
           );
           this.baseHours = Math.max(
             0,
-            hoursAtFetch - runningSecondsSoFar / 3600
+            hoursAtFetch - runningSecondsSoFar / 3600,
           );
           this.elapsedSeconds = Math.floor(hoursAtFetch * 3600);
           this.startInterval();
@@ -817,6 +817,30 @@ function escapeHtml(unsafe) {
     .replace(/'/g, "&#039;");
 }
 
+// Extract lightweight tokens from a note (issue numbers, repo slugs, issue URLs) for fuzzy matching
+function extractNoteTokens(text) {
+  const tokens = new Set();
+  if (!text) return tokens;
+
+  const lower = text.toLowerCase();
+  const issueMatches = lower.match(/#(\d+)/g) || [];
+  issueMatches.forEach((m) => tokens.add(m));
+
+  const issueUrlRegex = /issues\/(\d+)/g;
+  let urlMatch;
+  while ((urlMatch = issueUrlRegex.exec(lower))) {
+    tokens.add(`#${urlMatch[1]}`);
+  }
+
+  const repoRegex = /github\.com\/([\w.-]+\/[\w.-]+)/g;
+  let repoMatch;
+  while ((repoMatch = repoRegex.exec(lower))) {
+    tokens.add(repoMatch[1]);
+  }
+
+  return tokens;
+}
+
 // Global instances
 const timerManager = new TimerManager();
 // Removed recentEntriesCache (no longer used after simplification)
@@ -824,6 +848,8 @@ let projects = [];
 let tasks = [];
 let projectsLoaded = false;
 let lastSelection = null; // { projectId, taskId }
+let isPrefillingFromNotes = false;
+let prefillFromNotesTimeout = null;
 
 // DOM elements
 const authSection = document.getElementById("authSection");
@@ -1005,7 +1031,7 @@ if (startNewTaskBtn) {
     } catch (error) {
       console.error("Failed to start task:", error);
       showError(
-        t("error_start_task", "Failed to start task") + ": " + error.message
+        t("error_start_task", "Failed to start task") + ": " + error.message,
       );
     } finally {
       startNewTaskBtn.disabled = false;
@@ -1090,12 +1116,55 @@ function showAuthSection() {
   logoutBtn.style.display = "none";
 }
 
+async function prefillFormFromRunningTimer() {
+  const runningEntry = timerManager.currentTimer;
+  if (!runningEntry) return false;
+
+  const projectId = runningEntry.project?.id;
+  const taskId = runningEntry.task?.id;
+
+  if (!projectId) return false;
+
+  const projectOption = projectSelect?.querySelector(
+    `option[value="${projectId}"]`,
+  );
+  if (!projectOption) return false;
+
+  projectSelect.value = String(projectId);
+  await handleProjectChange();
+
+  if (taskId) {
+    const taskOption = taskSelect?.querySelector(`option[value="${taskId}"]`);
+    if (taskOption) {
+      taskSelect.value = String(taskId);
+    }
+  }
+
+  const notes = (runningEntry.notes || "").trim();
+  if (
+    descriptionInput &&
+    descriptionInput.dataset.userEdited !== "true" &&
+    notes
+  ) {
+    descriptionInput.value = notes;
+    descriptionInput.dataset.autoFilled = "true";
+  }
+
+  return true;
+}
+
 // Prefill form with last used project and task from recent entries
 async function prefillLastProjectAndTask() {
   try {
     console.log("🔄 Attempting to prefill last project and task...");
 
-    // Get today's entries
+    // Ensure userId is available to filter correctly
+    if (!timerManager.api.userId) {
+      console.warn("⚠️ Cannot prefill: userId not available yet");
+      return;
+    }
+
+    // Get today's entries (will be filtered by user_id in API call)
     const today = timerManager.api.getLocalDateString();
     const data = await timerManager.api.getTimeEntries(today);
     const entries = data.time_entries || [];
@@ -1145,6 +1214,124 @@ async function prefillLastProjectAndTask() {
   }
 }
 
+async function prefillProjectTaskFromNotes() {
+  if (isPrefillingFromNotes) return false;
+  if (timerManager.currentTimer) return false; // do not override an active timer selection
+
+  const desc = document.getElementById("description") || descriptionInput;
+  if (!desc) return false;
+  const notes = desc.value.trim();
+  if (!notes) return false;
+  if (!timerManager.api.userId) return false;
+  if (!projectsLoaded) return false;
+
+  isPrefillingFromNotes = true;
+  try {
+    const today = new Date();
+    const toDate = timerManager.api.getLocalDateString(today);
+    const from = new Date(today.getTime() - 90 * 24 * 3600 * 1000); // last 90 days for better matches
+    const fromDate = timerManager.api.getLocalDateString(from);
+
+    const data = await timerManager.api.getTimeEntriesRange(fromDate, toDate);
+    const entries = (data.time_entries || []).filter(
+      (e) =>
+        e.user?.id === timerManager.api.userId && e.project?.id && e.task?.id,
+    );
+    if (entries.length === 0) return false;
+
+    const targetTokens = extractNoteTokens(notes);
+    const targetLower = notes.toLowerCase();
+
+    let bestEntry = null;
+    let bestScore = 0;
+    let bestUpdated = "";
+
+    entries.forEach((entry) => {
+      const eNotes = entry.notes || "";
+      const eLower = eNotes.toLowerCase();
+      const eTokens = extractNoteTokens(eNotes);
+
+      let score = 0;
+      const hasTokenMatch = targetTokens.size
+        ? Array.from(eTokens).some((t) => targetTokens.has(t))
+        : false;
+      if (hasTokenMatch) score += 6;
+
+      if (
+        eLower &&
+        (eLower.includes(targetLower) || targetLower.includes(eLower))
+      ) {
+        score += 4;
+      }
+
+      const targetWords = targetLower.split(/\W+/).filter((w) => w.length > 3);
+      const entryWords = new Set(
+        eLower.split(/\W+/).filter((w) => w.length > 3),
+      );
+      let overlap = 0;
+      targetWords.forEach((w) => {
+        if (entryWords.has(w)) overlap++;
+      });
+      score += Math.min(3, overlap);
+
+      const updatedAt =
+        entry.updated_at || entry.created_at || entry.spent_date || "";
+      if (
+        score > bestScore ||
+        (score === bestScore && updatedAt > bestUpdated)
+      ) {
+        bestScore = score;
+        bestEntry = entry;
+        bestUpdated = updatedAt;
+      }
+    });
+
+    if (!bestEntry || bestScore < 3) return false; // avoid weak matches but allow lighter overlaps
+
+    const projectId = bestEntry.project?.id;
+    const taskId = bestEntry.task?.id;
+    if (!projectId || !taskId) return false;
+
+    const projectOption = projectSelect?.querySelector(
+      `option[value="${projectId}"]`,
+    );
+    if (!projectOption) return false; // project not visible/active
+
+    projectSelect.value = String(projectId);
+    await handleProjectChange();
+
+    const taskOption = Array.from(taskSelect.options).find(
+      (o) => o.value === String(taskId),
+    );
+    if (!taskOption) return false;
+
+    taskSelect.value = String(taskId);
+    lastSelection = { projectId: String(projectId), taskId: String(taskId) };
+    chrome.storage.local.set({ lastSelection });
+    console.log("✅ Prefilled project/task from note similarity", {
+      entryId: bestEntry.id,
+      projectId,
+      taskId,
+      score: bestScore,
+    });
+    return true;
+  } catch (error) {
+    console.warn("prefillProjectTaskFromNotes failed", error);
+  } finally {
+    isPrefillingFromNotes = false;
+  }
+  return false;
+}
+
+function schedulePrefillProjectTaskFromNotes() {
+  if (prefillFromNotesTimeout) {
+    clearTimeout(prefillFromNotesTimeout);
+  }
+  prefillFromNotesTimeout = setTimeout(() => {
+    prefillProjectTaskFromNotes();
+  }, 250);
+}
+
 async function showMainSection() {
   try {
     console.log("🎯 Showing main section...");
@@ -1154,7 +1341,7 @@ async function showMainSection() {
 
     console.log(
       "✅ Main section visibility set. Timer button element:",
-      !!document.getElementById("timerBtn")
+      !!document.getElementById("timerBtn"),
     );
 
     // Show user info
@@ -1163,13 +1350,25 @@ async function showMainSection() {
     // Load data with error handling for each step
     try {
       await loadProjects();
-      // Prefill last used project and task from today's entries
-      await prefillLastProjectAndTask();
-      // Try prefill immediately before anything else modifies description
-      await applyHarvestPrefill();
-      ensureDescriptionPrefill();
-      // New: always force an active tab snapshot of title/URL so description reliably reflects current page.
-      forceActiveTabPrefill();
+      const appliedRunningTimer = await prefillFormFromRunningTimer();
+
+      if (!appliedRunningTimer) {
+        // 1) Try to fill description from external sources (content script / saved prefill)
+        await applyHarvestPrefill();
+
+        // 2) First attempt: match project/task from description similarity
+        const matchedFromNotes = await prefillProjectTaskFromNotes();
+
+        // 3) Fallback: last used project/task for this user today
+        if (!matchedFromNotes) {
+          await prefillLastProjectAndTask();
+        }
+
+        // 4) Ensure we still have some context for description if empty
+        ensureDescriptionPrefill();
+        // 5) Opportunistic: active tab title/url snapshot
+        forceActiveTabPrefill();
+      }
     } catch (error) {
       console.error("Failed to load projects or apply prefill:", error);
     }
@@ -1234,8 +1433,8 @@ async function handleLogin() {
     showError(
       t(
         "error_invalid_subdomain",
-        "Invalid subdomain format. Use only letters, numbers, and hyphens."
-      )
+        "Invalid subdomain format. Use only letters, numbers, and hyphens.",
+      ),
     );
     return;
   }
@@ -1263,8 +1462,8 @@ async function handleLogin() {
       showError(
         t(
           "error_auth_failed",
-          "Invalid credentials. Please check your subdomain and token."
-        )
+          "Invalid credentials. Please check your subdomain and token.",
+        ),
       );
     }
   } catch (error) {
@@ -1337,7 +1536,7 @@ async function handleTimerToggle() {
       const result = await timerManager.startTimer(
         parseInt(projectId),
         parseInt(taskId),
-        notes
+        notes,
       );
       console.log("Timer started successfully:", result);
       // Remember selection
@@ -1408,7 +1607,7 @@ async function handleProjectChange() {
   // Prevent concurrent execution
   if (isHandlingProjectChange) {
     console.warn(
-      "⚠️ handleProjectChange already running, skipping duplicate call"
+      "⚠️ handleProjectChange already running, skipping duplicate call",
     );
     return;
   }
@@ -1420,7 +1619,7 @@ async function handleProjectChange() {
     console.log("🔄 Project changed to ID:", projectId);
     console.log(
       "📊 Current taskSelect options count BEFORE clear:",
-      taskSelect.options.length
+      taskSelect.options.length,
     );
 
     // Clear all options first
@@ -1433,7 +1632,7 @@ async function handleProjectChange() {
 
     console.log(
       "📊 Current taskSelect options count AFTER clear:",
-      taskSelect.options.length
+      taskSelect.options.length,
     );
 
     if (projectId) {
@@ -1449,7 +1648,7 @@ async function handleProjectChange() {
       if (!project.task_assignments || project.task_assignments.length === 0) {
         console.log("🔄 Fetching task assignments for project", project.id);
         const assignments = await timerManager.api.getProjectTaskAssignments(
-          project.id
+          project.id,
         );
         project.task_assignments = assignments; // mutate cached project
         console.log(`📥 Retrieved ${assignments.length} task assignments`);
@@ -1458,7 +1657,7 @@ async function handleProjectChange() {
       if (project.task_assignments && project.task_assignments.length > 0) {
         let addedTasks = 0;
         console.log(
-          `🔄 About to add ${project.task_assignments.length} task assignments`
+          `🔄 About to add ${project.task_assignments.length} task assignments`,
         );
         project.task_assignments.forEach((assignment, _index) => {
           const tObj = assignment.task;
@@ -1471,15 +1670,15 @@ async function handleProjectChange() {
           addedTasks++;
         });
         console.log(
-          `✅ Populated ${addedTasks} tasks for project ${project.name}`
+          `✅ Populated ${addedTasks} tasks for project ${project.name}`,
         );
         console.log(
           "📊 Final taskSelect options count:",
-          taskSelect.options.length
+          taskSelect.options.length,
         );
       } else {
         console.warn(
-          "⚠️ No active task assignments available for this project"
+          "⚠️ No active task assignments available for this project",
         );
         const opt = document.createElement("option");
         opt.disabled = true;
@@ -1523,7 +1722,7 @@ async function loadProjects() {
     tasks = tasksData.tasks || [];
 
     console.log(
-      `📋 Loaded ${projects.length} projects and ${tasks.length} tasks`
+      `📋 Loaded ${projects.length} projects and ${tasks.length} tasks`,
     );
 
     // Debug first few projects
@@ -1533,10 +1732,10 @@ async function loadProjects() {
         console.log(
           `  Project ${index + 1}: ${project.client?.name || "No Client"} → ${
             project.name
-          } (ID: ${project.id})`
+          } (ID: ${project.id})`,
         );
         console.log(
-          `    Task assignments: ${project.task_assignments?.length || 0}`
+          `    Task assignments: ${project.task_assignments?.length || 0}`,
         );
         if (project.task_assignments && project.task_assignments.length > 0) {
           project.task_assignments
@@ -1545,7 +1744,7 @@ async function loadProjects() {
               console.log(
                 `      Task ${taskIndex + 1}: ${assignment.task?.name} (ID: ${
                   assignment.task?.id
-                })`
+                })`,
               );
             });
         }
@@ -1554,7 +1753,7 @@ async function loadProjects() {
 
     console.log(
       "📊 ProjectSelect options count BEFORE clear:",
-      projectSelect.options.length
+      projectSelect.options.length,
     );
     projectSelect.innerHTML = "";
     const defaultProjectOption = document.createElement("option");
@@ -1563,7 +1762,7 @@ async function loadProjects() {
     projectSelect.appendChild(defaultProjectOption);
     console.log(
       "📊 ProjectSelect options count AFTER clear:",
-      projectSelect.options.length
+      projectSelect.options.length,
     );
 
     // Check for duplicate project IDs in the data
@@ -1622,14 +1821,35 @@ async function loadProjects() {
     });
 
     console.log(
-      `✅ Projects populated in dropdown: ${addedProjects} projects grouped by ${sortedClients.length} clients`
+      `✅ Projects populated in dropdown: ${addedProjects} projects grouped by ${sortedClients.length} clients`,
     );
     console.log(
       "📊 Final projectSelect options count:",
-      projectSelect.options.length
+      projectSelect.options.length,
     );
     projectsLoaded = true;
     if (timerBtn) timerBtn.disabled = false;
+
+    if (timerManager.currentTimer?.project?.id) {
+      const runningProjectId = String(timerManager.currentTimer.project.id);
+      const projectOption = projectSelect?.querySelector(
+        `option[value="${runningProjectId}"]`,
+      );
+      if (projectOption) {
+        projectSelect.value = runningProjectId;
+        await handleProjectChange();
+        const runningTaskId = timerManager.currentTimer.task?.id;
+        if (runningTaskId) {
+          const taskOption = Array.from(taskSelect.options).find(
+            (option) => option.value == runningTaskId,
+          );
+          if (taskOption) {
+            taskSelect.value = String(runningTaskId);
+          }
+        }
+      }
+      return;
+    }
 
     // Try to restore last selection
     chrome.storage.local.get(["lastSelection"], async (res) => {
@@ -1640,7 +1860,7 @@ async function loadProjects() {
           await handleProjectChange();
           if (lastSelection.taskId) {
             const taskOpt = Array.from(taskSelect.options).find(
-              (o) => o.value == lastSelection.taskId
+              (o) => o.value == lastSelection.taskId,
             );
             if (taskOpt) taskSelect.value = String(lastSelection.taskId);
           }
@@ -1663,13 +1883,13 @@ async function loadProjects() {
             const firstTask = proj.task_assignments[0]?.task;
             if (firstTask) {
               const opt = Array.from(taskSelect.options).find(
-                (o) => parseInt(o.value) === firstTask.id
+                (o) => parseInt(o.value) === firstTask.id,
               );
               if (opt) taskSelect.value = opt.value;
             }
             console.log(
               "🤖 Smart auto-selected project with tasks:",
-              proj.name
+              proj.name,
             );
             break;
           }
@@ -1699,7 +1919,7 @@ async function loadRecentEntries() {
 
     if (!timerManager.api.userId) {
       console.warn(
-        "[RecentEntries] Missing userId; ask user to re-authenticate"
+        "[RecentEntries] Missing userId; ask user to re-authenticate",
       );
       recentEntriesList.innerHTML =
         '<div class="entry-empty">Re-authenticate to see recent entries.</div>';
@@ -1775,8 +1995,8 @@ async function loadRecentEntries() {
       a.innerHTML = `
         <div class="entry-info">
           <div class="entry-project">${escapeHtml(clientName)} → ${escapeHtml(
-        projectName
-      )}</div>
+            projectName,
+          )}</div>
           <div class="entry-task">${escapeHtml(taskName)}</div>
           ${notes ? `<div class="entry-notes">${escapeHtml(notes)}</div>` : ""}
         </div>
@@ -1825,6 +2045,7 @@ async function handlePendingTimerStart() {
           descriptionInput.value && descriptionInput.value.trim().length > 0;
         if (!hadUserText) {
           descriptionInput.value = pending.task;
+          schedulePrefillProjectTaskFromNotes();
         }
         // Issue link enrichment removed in simplified model.
 
@@ -1835,7 +2056,7 @@ async function handlePendingTimerStart() {
           const match = projects.find(
             (p) =>
               normalized(p.name).includes(target) ||
-              target.includes(normalized(p.name))
+              target.includes(normalized(p.name)),
           );
           if (match) {
             projectSelect.value = match.id;
@@ -1876,7 +2097,7 @@ async function handlePendingTimerStart() {
 async function applyHarvestPrefill() {
   try {
     const result = await new Promise((r) =>
-      chrome.storage.local.get(["harvestPrefill"], r)
+      chrome.storage.local.get(["harvestPrefill"], r),
     );
     const prefill = result.harvestPrefill;
     if (!prefill) return;
@@ -1895,6 +2116,7 @@ async function applyHarvestPrefill() {
         ) {
           desc.value = newComposite;
           desc.dataset.autoFilled = "true";
+          schedulePrefillProjectTaskFromNotes();
         }
       }
     }
@@ -1935,14 +2157,15 @@ function ensureDescriptionPrefill() {
               const tabs = await new Promise((resolve) =>
                 chrome.tabs.query(
                   { active: true, currentWindow: true },
-                  resolve
-                )
+                  resolve,
+                ),
               );
               if (tabs && tabs[0]) {
                 const t = tabs[0];
                 const title = (t.title || "Untitled").trim();
                 const url = t.url || "";
                 desc.value = url ? `${title}\n${url}` : title;
+                schedulePrefillProjectTaskFromNotes();
                 updateStatusBar();
               }
             }
@@ -1965,6 +2188,7 @@ function forceActiveTabPrefill() {
     if (!desc) return;
     // Never overwrite explicit manual edits
     if (desc.dataset.userEdited === "true") return;
+    if (timerManager.currentTimer) return;
     if (chrome.tabs && chrome.tabs.query) {
       chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
         try {
@@ -1978,6 +2202,7 @@ function forceActiveTabPrefill() {
           if (current.split("\n")[0] !== title) {
             desc.value = composite;
             desc.dataset.autoFilled = "true";
+            schedulePrefillProjectTaskFromNotes();
             updateStatusBar();
           }
         } catch (e) {
@@ -2013,6 +2238,7 @@ chrome.runtime.onMessage.addListener((msg) => {
       ) {
         desc.value = composite;
         desc.dataset.autoFilled = "true";
+        schedulePrefillProjectTaskFromNotes();
       }
     }
     // If no timer running, reflect in status bar
@@ -2030,6 +2256,7 @@ document.addEventListener("input", (e) => {
     if (desc.value.trim()) {
       desc.dataset.userEdited = "true";
       desc.dataset.autoFilled = "false";
+      schedulePrefillProjectTaskFromNotes();
     } else if (!desc.value.trim()) {
       delete desc.dataset.userEdited; // allow auto-fill again if cleared
     }
@@ -2112,7 +2339,7 @@ async function openHarvestWebApp() {
   console.log("Chrome tabs API available:", !!chrome.tabs);
   console.log(
     "Chrome tabs create available:",
-    !!(chrome.tabs && chrome.tabs.create)
+    !!(chrome.tabs && chrome.tabs.create),
   );
 
   // Method 1: Use chrome.tabs API (preferred for extensions)
@@ -2130,7 +2357,7 @@ async function openHarvestWebApp() {
         } else {
           console.log("Successfully opened tab:", tab.id);
         }
-      }
+      },
     );
     return;
   }
