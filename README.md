@@ -12,6 +12,7 @@ A Safari web extension for Harvest time tracking, built with AI-assisted "vibe c
 - **Smart suggestions** based on current webpage
 - **Client-grouped projects** for better organization
 - **Real-time badge** showing timer in toolbar
+- **Recurring entries shortcut** to Harvest's native scheduling workflow
 
 ## 🎨 Vibe Coded
 
@@ -47,6 +48,20 @@ Built with **intuitive iteration** and **AI pair programming**:
 
 **Keyboard shortcut**: `Cmd+Shift+H` for quick access
 
+### Recurring time entries
+
+Choose **Manage in Harvest** in the popup, then open the **Recurring** panel
+on your timesheet. Harvest supports daily, weekly, monthly and custom schedules,
+optional end dates, and skipping non-working days. You can edit, pause or delete
+schedules there. An administrator can disable this feature for the account.
+
+This is a shortcut to Harvest's native feature, not an in-extension scheduler:
+the published v2 API does not document recurring-entry management. The extension
+does not create future entries locally or require Safari to remain open.
+Generated entries appear in the existing recent-entry list when fetched.
+
+See [Harvest's recurring-entry guide](https://support.getharvest.com/hc/en-us/articles/49603028485517-Recurring-time-entries).
+
 ## Development
 
 ```bash
@@ -74,6 +89,9 @@ npm run package  # Create .zip for distribution
 **Connection failed**: Verify subdomain and token validity  
 **Timer not syncing**: Check API credentials  
 **Buttons not appearing**: Refresh page after installation
+
+**Context menus unavailable**: Some Safari environments do not expose this API.
+Use the toolbar popup instead; timers and other integrations remain available.
 
 For debug logs: `Develop > Web Extension Background Pages > Harvest Time Tracker`
 

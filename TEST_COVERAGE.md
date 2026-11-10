@@ -6,6 +6,23 @@ Comprehensive unit tests have been created for the Safari Harvest Extension, cov
 
 ## Test Summary
 
+- **Current test files**: 12
+- **Current tests**: 129
+
+### Context-menu compatibility and recurring-entry access
+
+- `test/background.contextMenus.spec.js` exercises the real background script
+  with missing and partial context-menu APIs, supported menu creation/clicks,
+  missing tabs, creation errors, and the manifest permission.
+- `test/popup.recurring.spec.js` exercises the real popup's authenticated
+  timesheet link, unauthenticated state, absence of scheduling API writes,
+  and recurring-entry text in all seven languages.
+- Recurring schedules are managed by Harvest's native web UI, not a local
+  scheduler. Actual schedule execution and Safari UI behavior require manual
+  verification with a Harvest account.
+
+### Original baseline
+
 - **Total Test Files**: 10
 - **Total Tests**: 117
 - **Status**: ✅ All Passing

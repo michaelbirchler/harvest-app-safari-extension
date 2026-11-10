@@ -197,6 +197,12 @@ body::-webkit-scrollbar-thumb:hover {
   color: #24292e;
 }
 
+.recurring-description {
+  margin: 0.5rem 0;
+  font-size: 0.8125rem;
+  color: #656d76;
+}
+
 .current-task-card {
   display: flex;
   flex-direction: column;

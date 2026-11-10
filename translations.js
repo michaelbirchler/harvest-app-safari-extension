@@ -26,6 +26,11 @@ const translations = {
     new_task_description_placeholder: "What are you working on?",
     new_task_start_button: "Start Task",
     new_task_open_harvest: "Open Harvest ▸",
+    recurring_title: "Recurring time entries",
+    recurring_description:
+      "Open the Recurring panel on your Harvest timesheet to create, edit, pause or delete repeating entries. Harvest runs the schedule even when Safari is closed.",
+    recurring_manage: "Manage in Harvest",
+    recurring_help: "How recurring entries work",
 
     // Recent Entries
     recent_entries_title: "Recent Entries",
@@ -95,6 +100,11 @@ const translations = {
     new_task_description_placeholder: "Woran arbeiten Sie?",
     new_task_start_button: "Aufgabe starten",
     new_task_open_harvest: "Harvest öffnen ▸",
+    recurring_title: "Wiederkehrende Zeiteinträge",
+    recurring_description:
+      "Öffnen Sie den Bereich für wiederkehrende Einträge in Ihrem Harvest-Stundenzettel, um Einträge zu erstellen, zu bearbeiten, zu pausieren oder zu löschen. Harvest führt den Zeitplan auch bei geschlossenem Safari aus.",
+    recurring_manage: "In Harvest verwalten",
+    recurring_help: "So funktionieren wiederkehrende Einträge",
 
     // Letzte Einträge
     recent_entries_title: "Letzte Einträge",
@@ -165,6 +175,11 @@ const translations = {
     new_task_description_placeholder: "Sur quoi travaillez-vous?",
     new_task_start_button: "Démarrer la tâche",
     new_task_open_harvest: "Ouvrir Harvest ▸",
+    recurring_title: "Saisies de temps récurrentes",
+    recurring_description:
+      "Ouvrez le panneau des saisies récurrentes de votre feuille de temps Harvest pour créer, modifier, suspendre ou supprimer des saisies répétées. Harvest suit le calendrier même lorsque Safari est fermé.",
+    recurring_manage: "Gérer dans Harvest",
+    recurring_help: "Fonctionnement des saisies récurrentes",
 
     // Entrées récentes
     recent_entries_title: "Entrées récentes",
@@ -236,6 +251,11 @@ const translations = {
     new_task_description_placeholder: "Su cosa stai lavorando?",
     new_task_start_button: "Avvia attività",
     new_task_open_harvest: "Apri Harvest ▸",
+    recurring_title: "Registrazioni di tempo ricorrenti",
+    recurring_description:
+      "Apri il pannello delle registrazioni ricorrenti nel foglio ore di Harvest per creare, modificare, sospendere o eliminare le registrazioni ripetute. Harvest segue la pianificazione anche quando Safari è chiuso.",
+    recurring_manage: "Gestisci in Harvest",
+    recurring_help: "Come funzionano le registrazioni ricorrenti",
 
     // Voci recenti
     recent_entries_title: "Voci recenti",
@@ -305,6 +325,11 @@ const translations = {
     new_task_description_placeholder: "¿En qué estás trabajando?",
     new_task_start_button: "Iniciar tarea",
     new_task_open_harvest: "Abrir Harvest ▸",
+    recurring_title: "Registros de tiempo recurrentes",
+    recurring_description:
+      "Abre el panel de registros recurrentes en tu hoja de horas de Harvest para crear, editar, pausar o eliminar registros repetidos. Harvest ejecuta la programación incluso cuando Safari está cerrado.",
+    recurring_manage: "Gestionar en Harvest",
+    recurring_help: "Cómo funcionan los registros recurrentes",
 
     // Entradas recientes
     recent_entries_title: "Entradas recientes",
@@ -375,6 +400,11 @@ const translations = {
     new_task_description_placeholder: "No que você está trabalhando?",
     new_task_start_button: "Iniciar tarefa",
     new_task_open_harvest: "Abrir Harvest ▸",
+    recurring_title: "Registos de tempo recorrentes",
+    recurring_description:
+      "Abra o painel de registos recorrentes na sua folha de horas do Harvest para criar, editar, pausar ou eliminar registos repetidos. O Harvest executa o agendamento mesmo quando o Safari está fechado.",
+    recurring_manage: "Gerir no Harvest",
+    recurring_help: "Como funcionam os registos recorrentes",
 
     // Entradas recentes
     recent_entries_title: "Entradas recentes",
@@ -445,6 +475,11 @@ const translations = {
     new_task_description_placeholder: "Waar werk je aan?",
     new_task_start_button: "Start taak",
     new_task_open_harvest: "Open Harvest ▸",
+    recurring_title: "Terugkerende tijdregistraties",
+    recurring_description:
+      "Open het paneel voor terugkerende registraties op je Harvest-urenstaat om herhaalde registraties te maken, bewerken, pauzeren of verwijderen. Harvest voert het schema uit, ook wanneer Safari gesloten is.",
+    recurring_manage: "Beheren in Harvest",
+    recurring_help: "Hoe terugkerende registraties werken",
 
     // Recente vermeldingen
     recent_entries_title: "Recente vermeldingen",

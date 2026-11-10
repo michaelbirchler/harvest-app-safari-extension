@@ -1339,6 +1339,11 @@ async function showMainSection() {
     mainSection.style.display = "block";
     logoutBtn.style.display = "block";
 
+    const recurringHarvestLink = document.getElementById("recurringHarvestLink");
+    if (recurringHarvestLink && timerManager.api.subdomain) {
+      recurringHarvestLink.href = `https://${timerManager.api.subdomain}.harvestapp.com/time`;
+    }
+
     console.log(
       "✅ Main section visibility set. Timer button element:",
       !!document.getElementById("timerBtn"),

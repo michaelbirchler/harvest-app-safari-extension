@@ -262,30 +262,50 @@ chrome.windows.onRemoved?.addListener((winId) => {
 });
 
 // Handle installation
+const contextMenusAvailable =
+  typeof chrome.contextMenus?.create === "function" &&
+  typeof chrome.contextMenus?.onClicked?.addListener === "function";
+
 chrome.runtime.onInstalled.addListener((details) => {
   if (details.reason === "install") {
     console.log("Harvest Time Tracker installed");
 
     // Set up context menu items
-    chrome.contextMenus.create({
-      id: "harvest-start-timer",
-      title: "Start Harvest Timer",
-      contexts: ["page"],
-    });
+    if (contextMenusAvailable) {
+      chrome.contextMenus.create(
+        {
+          id: "harvest-start-timer",
+          title: "Start Harvest Timer",
+          contexts: ["page"],
+        },
+        () => {
+          if (chrome.runtime.lastError) {
+            console.error("Failed to create Harvest context menu:", chrome.runtime.lastError);
+          }
+        },
+      );
+    }
   }
 });
 
 // Handle context menu clicks
-chrome.contextMenus.onClicked.addListener((info, tab) => {
-  if (info.menuItemId === "harvest-start-timer") {
-    // Open popup or send message to content script
-    chrome.tabs.sendMessage(tab.id, {
-      action: "showTimerWidget",
-      url: tab.url,
-      title: tab.title,
-    });
-  }
-});
+if (contextMenusAvailable) {
+  chrome.contextMenus.onClicked.addListener((info, tab) => {
+    if (info.menuItemId === "harvest-start-timer") {
+      if (tab?.id == null) {
+        console.warn("Cannot start Harvest timer without a context-menu tab");
+        return;
+      }
+      chrome.tabs.sendMessage(tab.id, {
+        action: "showTimerWidget",
+        url: tab.url,
+        title: tab.title,
+      });
+    }
+  });
+} else {
+  console.info("Context menus are unavailable; use the Harvest toolbar button instead.");
+}
 
 // Handle messages from content scripts
 chrome.runtime.onMessage.addListener((message, sender, _sendResponse) => {

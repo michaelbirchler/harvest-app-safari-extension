@@ -9,6 +9,7 @@
   "permissions": [
     "storage",
     "activeTab",
+    "contextMenus",
     "tabs",
     "https://api.harvestapp.com/*",
     "https://*.harvestapp.com/*",
